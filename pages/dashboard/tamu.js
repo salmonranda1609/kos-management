@@ -112,24 +112,24 @@ export default function TamuPage() {
 
   // Fungsi untuk Kirim ke WhatsApp
   const sendToWhatsApp = (t) => {
-    // Bersihkan nomor HP (hilangkan karakter non-angka)
+    // Bersihkan nomor HP
     let phone = t.no_hp.replace(/\D/g, '');
-    // Ubah awalan 0 menjadi 62
     if (phone.startsWith('0')) {
       phone = '62' + phone.slice(1);
     }
 
+    // Format pesan menggunakan Enter (%0A) dan bintang (*) untuk bold
     const text = `*BUKTI MASUK KOS*%0A` +
-                 `---------------------------------%0A` +
-                 `*Nama*         : ${t.nama}%0A` +
-                 `*No. HP*      : ${t.no_hp}%0A` +
-                 `*Kamar*       : ${t.kamar?.nomor_kamar || '-'}%0A` +
-                 `*Periode*     : ${t.periode}%0A` +
-                 `*Tgl Masuk*   : ${t.tanggal_masuk}%0A` +
-                 `*Harga*       : Rp ${t.harga ? t.harga.toLocaleString('id-ID') : '-'}%0A` +
-                 `*Catatan*     : ${t.catatan || '-'}%0A` +
-                 `---------------------------------%0A` +
-                 `Terima kasih telah menginap di Kos-Kika.`;
+                 `=============================%0A%0A` +
+                 `*Nama*       : ${t.nama}%0A` +
+                 `*No. HP*     : ${t.no_hp}%0A` +
+                 `*Kamar*      : ${t.kamar?.nomor_kamar || '-'}%0A` +
+                 `*Periode*    : ${t.periode}%0A` +
+                 `*Tgl Masuk*  : ${t.tanggal_masuk}%0A` +
+                 `*Harga*      : Rp ${t.harga ? t.harga.toLocaleString('id-ID') : '-'}%0A` +
+                 `*Catatan*    : ${t.catatan || '-'}%0A%0A` +
+                 `=============================%0A` +
+                 `Terima kasih telah menginap di Kos App.`;
 
     window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
   };
