@@ -129,7 +129,7 @@ export default function TamuPage() {
                  `*Harga*       : Rp ${t.harga ? t.harga.toLocaleString('id-ID') : '-'}%0A` +
                  `*Catatan*     : ${t.catatan || '-'}%0A` +
                  `---------------------------------%0A` +
-                 `Terima kasih telah menginap di Kos App.`;
+                 `Terima kasih telah menginap di Kos-Kika.`;
 
     window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
   };
@@ -416,7 +416,7 @@ export default function TamuPage() {
           
           <div className="text-center border-b-2 border-black pb-4 mb-8">
             <h1 className="text-3xl font-bold uppercase tracking-wider">BUKTI MASUK KOS</h1>
-            <p className="text-gray-600 mt-1">Kos App Management</p>
+            <p className="text-gray-600 mt-1">Kos-Kika Management</p>
           </div>
           
           {printData && (

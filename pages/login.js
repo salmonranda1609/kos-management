@@ -22,7 +22,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-500 to-blue-700 p-4">
       <form onSubmit={submit} className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-1 text-center">🏠 Kos App</h1>
+        <h1 className="text-2xl font-bold mb-1 text-center">🏠 Kos-Kika</h1>
         <p className="text-gray-500 text-sm text-center mb-6">Login Penjaga / Pemilik</p>
 
         {err && <div className="bg-red-100 text-red-700 text-sm p-2 rounded mb-3">{err}</div>}

@@ -21,7 +21,7 @@ export default function Layout({ children, role }) {
       {/* Top Navbar */}
       <div className="navbar bg-primary text-primary-content shadow-lg sticky top-0 z-50">
         <div className="flex-1">
-          <Link href="/dashboard" className="btn btn-ghost text-xl normal-case">🏠 Kos App</Link>
+          <Link href="/dashboard" className="btn btn-ghost text-xl normal-case">🏠 Kos-Kika</Link>
         </div>
         <div className="flex-none gap-2">
           <span className="hidden sm:inline text-sm opacity-80">{email}</span>
