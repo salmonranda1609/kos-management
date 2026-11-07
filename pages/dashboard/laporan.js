@@ -85,35 +85,27 @@ export default function LaporanPage() {
         </div>
       </div>
 
-      {/* Kartu Rekap - Dibuat menumpuk ke bawah jika di HP */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="card bg-base-100 shadow border border-base-200">
-          <div className="card-body p-4">
-            <div className="text-sm text-gray-500 mb-1">Periode Laporan</div>
-            <div className="text-xl font-bold text-primary">{listBulan[bulan - 1]} {tahun}</div>
+      {/* Kartu Rekap - Menumpuk ke bawah di HP */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1 bg-base-100 p-4 rounded-xl shadow-sm border border-base-200">
+          <div className="text-sm text-gray-500 mb-1">Periode Laporan</div>
+          <div className="text-xl font-bold text-primary">{listBulan[bulan - 1]} {tahun}</div>
+        </div>
+        <div className="flex-1 bg-base-100 p-4 rounded-xl shadow-sm border border-base-200">
+          <div className="text-sm text-gray-500 mb-1">Total Transaksi</div>
+          <div className="text-xl font-bold text-secondary">
+            {laporan.length} <span className="text-sm font-normal text-gray-500">Tamu</span>
           </div>
         </div>
-        <div className="card bg-base-100 shadow border border-base-200">
-          <div className="card-body p-4">
-            <div className="text-sm text-gray-500 mb-1">Total Transaksi</div>
-            <div className="text-xl font-bold text-secondary">
-              {laporan.length} <span className="text-sm font-normal text-gray-500">Tamu</span>
-            </div>
-          </div>
-        </div>
-        <div className="card bg-base-100 shadow border border-base-200">
-          <div className="card-body p-4">
-            <div className="text-sm text-gray-500 mb-1">Total Pendapatan</div>
-            <div className="text-xl font-bold text-success truncate" title={`Rp ${totalPendapatan.toLocaleString('id-ID')}`}>
-              Rp {totalPendapatan.toLocaleString('id-ID')}
-            </div>
+        <div className="flex-1 bg-base-100 p-4 rounded-xl shadow-sm border border-base-200">
+          <div className="text-sm text-gray-500 mb-1">Total Pendapatan</div>
+          <div className="text-xl font-bold text-success break-words">
+            Rp {totalPendapatan.toLocaleString('id-ID')}
           </div>
         </div>
       </div>
 
-      {/* ======================================================== */}
-      {/* TAMPILAN MOBILE (CARD LIST) - KHUSUS UNTUK LAYAR KECIL */}
-      {/* ======================================================== */}
+      {/* TAMPILAN MOBILE (CARD LIST) - Murni pakai DIV tanpa tabel */}
       <div className="block md:hidden space-y-3">
         {laporan.length === 0 && (
           <div className="text-center py-8 bg-base-100 rounded-box shadow text-sm text-gray-500">
@@ -121,36 +113,29 @@ export default function LaporanPage() {
           </div>
         )}
         {laporan.map((t) => (
-          <div key={t.id} className="card bg-base-100 shadow-sm border border-base-200">
-            <div className="card-body p-4">
-              <div className="flex justify-between items-start mb-2">
-                <div className="pr-2">
-                  <h3 className="font-bold text-sm leading-tight truncate">{t.nama}</h3>
-                  <p className="text-[11px] text-gray-500 mt-0.5">Kamar {t.kamar?.nomor_kamar || '-'} • {t.periode}</p>
-                </div>
-                <div className="font-bold text-success text-sm whitespace-nowrap">
-                  Rp {t.harga?.toLocaleString('id-ID')}
-                </div>
+          <div key={t.id} className="bg-base-100 shadow-sm border border-base-200 rounded-xl p-4">
+            <div className="flex justify-between items-start mb-2 gap-2">
+              <div>
+                <h3 className="font-bold text-sm text-gray-800">{t.nama}</h3>
+                <p className="text-xs text-gray-500 mt-1">Kamar {t.kamar?.nomor_kamar || '-'} • {t.periode}</p>
               </div>
-              
-              <div className="flex justify-between items-center mt-2 pt-3 border-t border-base-100 text-[11px] text-gray-500">
-                <div className="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clipRule="evenodd" /></svg>
-                  Masuk: {t.tanggal_masuk}
-                </div>
-                {t.tanggal_keluar
-                  ? <span className="badge badge-ghost badge-sm">Selesai</span>
-                  : <span className="badge badge-success text-white badge-sm">Aktif</span>}
+              <div className="font-bold text-success text-sm whitespace-nowrap">
+                Rp {t.harga?.toLocaleString('id-ID')}
               </div>
+            </div>
+            
+            <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
+              <span>Masuk: {t.tanggal_masuk}</span>
+              {t.tanggal_keluar
+                ? <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-md text-[10px]">Selesai</span>
+                : <span className="bg-green-500 text-white px-2 py-1 rounded-md text-[10px]">Aktif</span>}
             </div>
           </div>
         ))}
       </div>
 
-      {/* ======================================================== */}
-      {/* TAMPILAN DESKTOP (TABEL) - HANYA MUNCUL DI LAYAR LEBAR */}
-      {/* ======================================================== */}
-      <div className="hidden md:block card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
+      {/* TAMPILAN DESKTOP (TABEL) */}
+      <div className="hidden md:block bg-base-100 shadow-xl border border-base-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
             <thead className="bg-base-200">
@@ -164,13 +149,6 @@ export default function LaporanPage() {
               </tr>
             </thead>
             <tbody>
-              {laporan.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="text-center py-8 text-gray-500">
-                    Tidak ada data pendapatan pada periode ini.
-                  </td>
-                </tr>
-              )}
               {laporan.map((t) => (
                 <tr key={t.id} className="hover">
                   <td className="whitespace-nowrap">{t.tanggal_masuk}</td>
