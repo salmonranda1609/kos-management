@@ -85,26 +85,14 @@ export default function LaporanPage() {
         </div>
       </div>
 
-      {/* Kartu Rekap - Digabung jadi 1 Card */}
-      <div className="card bg-base-100 shadow-xl border border-base-200 mb-6">
-        <div className="card-body p-5 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
-          <div className="text-center sm:text-left">
-            <div className="text-sm text-gray-500 font-medium mb-1">Total Transaksi</div>
-            <div className="text-2xl font-bold text-secondary">
-              {laporan.length} <span className="text-sm font-normal text-gray-500">Tamu</span>
-            </div>
-          </div>
-          <div className="hidden sm:block w-px h-12 bg-base-300 mx-4"></div>
-          <div className="text-center sm:text-right">
-            <div className="text-sm text-gray-500 font-medium mb-1">Total Pendapatan</div>
-            <div className="text-2xl sm:text-3xl font-bold text-success">
-              Rp {totalPendapatan.toLocaleString('id-ID')}
-            </div>
+      {/* Kartu Rekap - Dibuat menumpuk ke bawah jika di HP */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="card bg-base-100 shadow border border-base-200">
+          <div className="card-body p-4">
+            <div className="text-sm text-gray-500 mb-1">Periode Laporan</div>
+            <div className="text-xl font-bold text-primary">{listBulan[bulan - 1]} {tahun}</div>
           </div>
         </div>
-      </div>
-      </div>
-      </div>
         <div className="card bg-base-100 shadow border border-base-200">
           <div className="card-body p-4">
             <div className="text-sm text-gray-500 mb-1">Total Transaksi</div>
@@ -185,7 +173,7 @@ export default function LaporanPage() {
               )}
               {laporan.map((t) => (
                 <tr key={t.id} className="hover">
-                  <td className="whitespace-nowrap text-sm">{t.tanggal_masuk}</td>
+                  <td className="whitespace-nowrap">{t.tanggal_masuk}</td>
                   <td className="font-semibold">{t.nama}</td>
                   <td><div className="badge badge-outline">{t.kamar?.nomor_kamar || '-'}</div></td>
                   <td className="capitalize">{t.periode}</td>
