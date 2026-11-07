@@ -129,7 +129,7 @@ export default function TamuPage() {
                  `*Harga*      : Rp ${t.harga ? t.harga.toLocaleString('id-ID') : '-'}%0A` +
                  `*Catatan*    : ${t.catatan || '-'}%0A%0A` +
                  `=============================%0A` +
-                 `Terima kasih telah menginap di Kos App.`;
+                 `Terima kasih telah menginap di Kos Kika.`;
 
     window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
   };
