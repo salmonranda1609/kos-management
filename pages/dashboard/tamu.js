@@ -10,6 +10,8 @@ export default function TamuPage() {
   const [filter, setFilter] = useState('aktif'); // 'aktif' atau 'selesai'
   const [filter, setFilter] = useState('aktif'); // 'aktif' atau 'selesai'
   const [filter, setFilter] = useState('aktif'); // 'aktif' atau 'selesai'
+  const [filter, setFilter] = useState('aktif'); // 'aktif' atau 'selesai'
+  const [filter, setFilter] = useState('aktif'); // 'aktif' atau 'selesai'
   const [tamu, setTamu] = useState([]);
   const [kamarSemua, setKamarSemua] = useState([]);
   
@@ -149,6 +151,16 @@ export default function TamuPage() {
     filter === 'aktif' ? !t.tanggal_keluar : t.tanggal_keluar
   );
 
+  // Filter data berdasarkan tab yang dipilih
+  const tamuFiltered = tamu.filter(t => 
+    filter === 'aktif' ? !t.tanggal_keluar : t.tanggal_keluar
+  );
+
+  // Filter data berdasarkan tab yang dipilih
+  const tamuFiltered = tamu.filter(t => 
+    filter === 'aktif' ? !t.tanggal_keluar : t.tanggal_keluar
+  );
+
   return (
     <Layout role={role}>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -158,6 +170,38 @@ export default function TamuPage() {
         </div>
         <button onClick={() => { resetForm(); setShowForm(!showForm); }} className={`btn ${showForm ? 'btn-ghost' : 'btn-primary'} w-full sm:w-auto`}>
           {showForm ? '✖ Batal' : '+ Input Tamu Baru'}
+        </button>
+      </div>
+
+      {/* Tab Filter */}
+      <div className="tabs tabs-boxed mb-4 w-full sm:w-auto inline-flex bg-base-200 p-1">
+        <button 
+          onClick={() => setFilter('aktif')} 
+          className={`tab ${filter === 'aktif' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Tamu Aktif
+        </button>
+        <button 
+          onClick={() => setFilter('selesai')} 
+          className={`tab ${filter === 'selesai' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Riwayat (Selesai)
+        </button>
+      </div>
+
+      {/* Tab Filter */}
+      <div className="tabs tabs-boxed mb-4 w-full sm:w-auto inline-flex bg-base-200 p-1">
+        <button 
+          onClick={() => setFilter('aktif')} 
+          className={`tab ${filter === 'aktif' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Tamu Aktif
+        </button>
+        <button 
+          onClick={() => setFilter('selesai')} 
+          className={`tab ${filter === 'selesai' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Riwayat (Selesai)
         </button>
       </div>
 
