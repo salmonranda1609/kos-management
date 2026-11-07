@@ -103,6 +103,8 @@ export default function LaporanPage() {
           </div>
         </div>
       </div>
+      </div>
+      </div>
         <div className="card bg-base-100 shadow border border-base-200">
           <div className="card-body p-4">
             <div className="text-sm text-gray-500 mb-1">Total Transaksi</div>
