@@ -40,7 +40,7 @@ export default function Layout({ children, role }) {
       {role === 'pemilik' && (
         <div className="tabs tabs-boxed bg-base-100 p-2 rounded-none border-b justify-center gap-2">
           <Link href="/dashboard" className={`tab ${router.pathname === '/dashboard' ? 'tab-active' : ''}`}>Dashboard Pemilik</Link>
-          <Link href="/dashboard/laporan" className={`tab ${router.pathname === '/dashboard/laporan' ? 'tab-active' : ''}`}>Laporan Pembayaran</Link>
+          <Link href="/dashboard/laporan-baru" className={`tab ${router.pathname === '/dashboard/laporan' ? 'tab-active' : ''}`}>Laporan Pembayaran</Link>
         </div>
       )}
 
