@@ -19,10 +19,13 @@ export default function TamuPage() {
   });
   const [loading, setLoading] = useState(false);
 
-  // State untuk Cetak PDF
   const [printData, setPrintData] = useState(null);
   const componentRef = useRef();
-  const handlePrint = useReactToPrint({ content: () => componentRef.current });
+  
+  const handlePrint = useReactToPrint({ 
+    content: () => componentRef.current,
+    documentTitle: printData ? `Bukti_Masuk_${printData.nama}` : 'Bukti_Masuk'
+  });
 
   const loadData = async () => {
     const { data: kamarAll } = await supabase.from('kamar').select('*').order('nomor_kamar');
@@ -99,7 +102,31 @@ export default function TamuPage() {
 
   const triggerPrint = (t) => {
     setPrintData(t);
-    setTimeout(() => handlePrint(), 100);
+    setTimeout(() => handlePrint(), 150);
+  };
+
+  // Fungsi untuk Kirim ke WhatsApp
+  const sendToWhatsApp = (t) => {
+    // Bersihkan nomor HP (hilangkan karakter non-angka)
+    let phone = t.no_hp.replace(/\D/g, '');
+    // Ubah awalan 0 menjadi 62
+    if (phone.startsWith('0')) {
+      phone = '62' + phone.slice(1);
+    }
+
+    const text = `*BUKTI MASUK KOS*%0A` +
+                 `---------------------------------%0A` +
+                 `*Nama*         : ${t.nama}%0A` +
+                 `*No. HP*      : ${t.no_hp}%0A` +
+                 `*Kamar*       : ${t.kamar?.nomor_kamar || '-'}%0A` +
+                 `*Periode*     : ${t.periode}%0A` +
+                 `*Tgl Masuk*   : ${t.tanggal_masuk}%0A` +
+                 `*Harga*       : Rp ${t.harga ? t.harga.toLocaleString('id-ID') : '-'}%0A` +
+                 `*Catatan*     : ${t.catatan || '-'}%0A` +
+                 `---------------------------------%0A` +
+                 `Terima kasih telah menginap di Kos App.`;
+
+    window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
   };
 
   if (!role) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
@@ -170,9 +197,7 @@ export default function TamuPage() {
         </div>
       )}
 
-      {/* ======================================================== */}
-      {/* TAMPILAN MOBILE (DESAIN LIST MODERN) */}
-      {/* ======================================================== */}
+      {/* TAMPILAN MOBILE */}
       <div className="block md:hidden bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
         {tamu.length === 0 && (
           <div className="text-center py-8 text-gray-500 text-sm">Belum ada data tamu.</div>
@@ -214,7 +239,8 @@ export default function TamuPage() {
                 </div>
                 <div className="flex justify-end gap-1 mt-2 pt-2 border-t border-base-100">
                   <button onClick={() => handleEdit(t)} className="btn btn-xs btn-ghost text-gray-500 h-7 min-h-0 px-3 font-medium rounded-md">Edit</button>
-                  <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-ghost text-info h-7 min-h-0 px-3 font-medium rounded-md">Cetak</button>
+                  <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-ghost text-gray-500 h-7 min-h-0 px-3 font-medium rounded-md">PDF</button>
+                  <button onClick={() => sendToWhatsApp(t)} className="btn btn-xs btn-ghost text-success h-7 min-h-0 px-3 font-medium rounded-md">Kirim WA</button>
                   {!t.tanggal_keluar && (
                     <button onClick={() => checkOut(t.id)} className="btn btn-xs btn-ghost text-error h-7 min-h-0 px-3 font-medium rounded-md">Checkout</button>
                   )}
@@ -225,9 +251,7 @@ export default function TamuPage() {
         </div>
       </div>
 
-      {/* ======================================================== */}
-      {/* TAMPILAN DESKTOP (TABEL) */}
-      {/* ======================================================== */}
+      {/* TAMPILAN DESKTOP */}
       <div className="hidden md:block card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
@@ -262,7 +286,8 @@ export default function TamuPage() {
                   <td className="text-center">
                     <div className="flex flex-nowrap justify-center gap-1">
                       <button onClick={() => handleEdit(t)} className="btn btn-xs btn-warning btn-outline">Edit</button>
-                      <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-info btn-outline">Cetak</button>
+                      <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-info btn-outline">PDF</button>
+                      <button onClick={() => sendToWhatsApp(t)} className="btn btn-xs btn-success btn-outline">Kirim WA</button>
                       {!t.tanggal_keluar && (
                         <button onClick={() => checkOut(t.id)} className="btn btn-xs btn-error btn-outline">Checkout</button>
                       )}
@@ -275,47 +300,63 @@ export default function TamuPage() {
         </div>
       </div>
 
-      {/* ================= TEMPLATE PRINT PDF ================= */}
-      {/* Hanya dirender jika printData tidak null, memastikan hanya 1 data yang tercetak */}
+      {/* ================= TEMPLATE PRINT PDF (DIRAPIKAN) ================= */}
       <div className="hidden">
-        <div ref={componentRef} className="p-8 text-black font-sans w-[800px]">
+        <div ref={componentRef} className="p-12 text-black bg-white" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'Arial, sans-serif' }}>
+          
+          <div className="text-center border-b-2 border-black pb-4 mb-8">
+            <h1 className="text-3xl font-bold uppercase tracking-wider">BUKTI MASUK KOS</h1>
+            <p className="text-gray-600 mt-1">Kos App Management</p>
+          </div>
+          
           {printData && (
-            <>
-              <div className="text-center border-b-2 border-black pb-4 mb-6">
-                <h1 className="text-3xl font-bold uppercase">Bukti Masuk Kos</h1>
-                <p className="text-sm">Kos App Management</p>
-              </div>
-              
-              <div className="space-y-3 text-base">
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="font-bold">Nama Lengkap</span><span>:</span><span>{printData.nama}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="font-bold">No. HP</span><span>:</span><span>{printData.no_hp}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="font-bold">Kamar</span><span>:</span><span>{printData.kamar?.nomor_kamar || '-'}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="font-bold">Periode</span><span>:</span><span className="capitalize">{printData.periode}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="font-bold">Tanggal Masuk</span><span>:</span><span>{printData.tanggal_masuk}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="font-bold">Harga</span><span>:</span><span>Rp {printData.harga ? printData.harga.toLocaleString('id-ID') : '-'}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="font-bold">Catatan</span><span>:</span><span>{printData.catatan || '-'}</span>
-                </div>
-              </div>
-
-              <div className="mt-16 text-right pr-12">
-                <p className="mb-20">Penjaga Kos,</p>
-                <p className="font-bold underline">_____________________</p>
-              </div>
-            </>
+            <div className="text-base leading-relaxed">
+              <table className="w-full">
+                <tbody>
+                  <tr>
+                    <td className="w-48 py-2 font-bold">Nama Lengkap</td>
+                    <td className="w-4 py-2">:</td>
+                    <td className="py-2 font-semibold">{printData.nama}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold">No. HP</td>
+                    <td className="py-2">:</td>
+                    <td className="py-2">{printData.no_hp}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold">Kamar</td>
+                    <td className="py-2">:</td>
+                    <td className="py-2 font-bold">{printData.kamar?.nomor_kamar || '-'}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold">Periode</td>
+                    <td className="py-2">:</td>
+                    <td className="py-2 capitalize">{printData.periode}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold">Tanggal Masuk</td>
+                    <td className="py-2">:</td>
+                    <td className="py-2">{printData.tanggal_masuk}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold">Harga</td>
+                    <td className="py-2">:</td>
+                    <td className="py-2 font-bold">Rp {printData.harga ? printData.harga.toLocaleString('id-ID') : '-'}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-bold align-top">Catatan</td>
+                    <td className="py-2 align-top">:</td>
+                    <td className="py-2">{printData.catatan || '-'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           )}
+
+          <div className="mt-24 text-right pr-12">
+            <p className="mb-24">Penjaga Kos,</p>
+            <p className="font-bold underline">_____________________</p>
+          </div>
         </div>
       </div>
     </Layout>
