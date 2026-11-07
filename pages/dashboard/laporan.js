@@ -77,18 +77,23 @@ export default function LaporanPage() {
       </div>
 
       {/* STATS RINGKASAN */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500 mb-1">Periode Laporan</div>
-          <div className="text-xl font-bold text-blue-600">{listBulan[bulan - 1]} {tahun}</div>
+            {/* STATS RINGKASAN (Digabung dalam 1 Card) */}
+      <div className="stats stats-vertical md:stats-horizontal shadow w-full bg-white border border-gray-200 mb-6 overflow-x-auto">
+        <div className="stat">
+          <div className="stat-title text-gray-500">Periode Laporan</div>
+          <div className="stat-value text-lg md:text-xl text-blue-600">{listBulan[bulan - 1]} {tahun}</div>
         </div>
-        <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500 mb-1">Total Transaksi</div>
-          <div className="text-xl font-bold text-pink-500">{laporan.length} <span className="text-sm font-normal text-gray-500">Tamu</span></div>
+        
+        <div className="stat">
+          <div className="stat-title text-gray-500">Total Transaksi</div>
+          <div className="stat-value text-lg md:text-xl text-pink-500">{laporan.length} <span className="text-sm font-normal text-gray-500">Tamu</span></div>
         </div>
-        <div className="flex-1 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500 mb-1">Total Pendapatan</div>
-          <div className="text-xl font-bold text-green-600 break-words">Rp {totalPendapatan.toLocaleString('id-ID')}</div>
+        
+        <div className="stat">
+          <div className="stat-title text-gray-500">Total Pendapatan</div>
+          <div className="stat-value text-lg md:text-xl text-green-600 truncate" title={`Rp ${totalPendapatan.toLocaleString('id-ID')}`}>
+            Rp {totalPendapatan.toLocaleString('id-ID')}
+          </div>
         </div>
       </div>
 
