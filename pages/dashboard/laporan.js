@@ -22,7 +22,6 @@ export default function LaporanPage() {
   const fetchLaporan = async () => {
     setLoading(true);
     
-    // Tentukan awal dan akhir bulan berdasarkan filter
     const startDate = new Date(tahun, bulan - 1, 1).toISOString().split('T')[0];
     const endDate = new Date(tahun, bulan, 0).toISOString().split('T')[0];
 
@@ -30,7 +29,6 @@ export default function LaporanPage() {
       .from('tamu')
       .select('*, kamar(nomor_kamar)')
       .not('harga', 'is', null)
-      // Filter berdasarkan tanggal masuk (antara awal bulan dan akhir bulan)
       .gte('tanggal_masuk', startDate)
       .lte('tanggal_masuk', endDate)
       .order('tanggal_masuk', { ascending: false });
@@ -52,14 +50,12 @@ export default function LaporanPage() {
     })();
   }, [router]);
 
-  // Panggil ulang fetchLaporan jika filter bulan/tahun berubah
   useEffect(() => {
     if (role === 'pemilik') fetchLaporan();
   }, [bulan, tahun]);
 
   if (!role || loading) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
 
-  // Hitung total pendapatan berdasarkan filter bulan ini
   const totalPendapatan = laporan.reduce((sum, item) => sum + (item.harga || 0), 0);
 
   return (
@@ -91,27 +87,72 @@ export default function LaporanPage() {
         </div>
       </div>
 
-      {/* Kartu Rekap */}
-      <div className="stats shadow w-full mb-6 bg-base-100 border border-base-300">
-        <div className="stat">
-          <div className="stat-title">Periode Laporan</div>
-          <div className="stat-value text-primary text-xl md:text-2xl">{listBulan[bulan - 1]} {tahun}</div>
+      {/* Kartu Rekap - Dibuat responsif (menumpuk di HP) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="card bg-base-100 shadow-sm border border-base-200">
+          <div className="card-body p-4">
+            <div className="text-sm text-gray-500 mb-1">Periode Laporan</div>
+            <div className="text-xl font-bold text-primary">{listBulan[bulan - 1]} {tahun}</div>
+          </div>
         </div>
-        <div className="stat">
-          <div className="stat-title">Total Transaksi</div>
-          <div className="stat-value text-secondary">{laporan.length} <span className="text-sm font-normal">Tamu</span></div>
+        <div className="card bg-base-100 shadow-sm border border-base-200">
+          <div className="card-body p-4">
+            <div className="text-sm text-gray-500 mb-1">Total Transaksi</div>
+            <div className="text-xl font-bold text-secondary">
+              {laporan.length} <span className="text-sm font-normal text-gray-500">Tamu</span>
+            </div>
+          </div>
         </div>
-        <div className="stat">
-          <div className="stat-title">Total Pendapatan</div>
-          <div className="stat-value text-success text-xl md:text-3xl">Rp {totalPendapatan.toLocaleString('id-ID')}</div>
+        <div className="card bg-base-100 shadow-sm border border-base-200">
+          <div className="card-body p-4">
+            <div className="text-sm text-gray-500 mb-1">Total Pendapatan</div>
+            <div className="text-xl font-bold text-success">
+              Rp {totalPendapatan.toLocaleString('id-ID')}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Tabel Laporan */}
-      <div className="card bg-base-100 shadow-xl overflow-hidden">
+      {/* ======================================================== */}
+      {/* TAMPILAN MOBILE (CARD LIST) */}
+      {/* ======================================================== */}
+      <div className="block md:hidden space-y-2">
+        {laporan.length === 0 && (
+          <div className="text-center py-8 bg-base-100 rounded-box shadow text-sm text-gray-500">
+            Tidak ada data pendapatan pada bulan ini.
+          </div>
+        )}
+        {laporan.map((t) => (
+          <div key={t.id} className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body p-3">
+              <div className="flex justify-between items-start mb-1">
+                <div>
+                  <h3 className="font-bold text-base leading-tight">{t.nama}</h3>
+                  <p className="text-[11px] text-gray-500">Kamar {t.kamar?.nomor_kamar || '-'} • {t.periode}</p>
+                </div>
+                <div className="font-bold text-success">
+                  Rp {t.harga?.toLocaleString('id-ID')}
+                </div>
+              </div>
+              
+              <div className="flex justify-between items-center mt-2 pt-2 border-t border-base-100 text-[11px] text-gray-500">
+                <span>Masuk: {t.tanggal_masuk}</span>
+                {t.tanggal_keluar
+                  ? <span className="badge badge-ghost badge-sm">Selesai</span>
+                  : <span className="badge badge-success text-white badge-sm">Aktif</span>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ======================================================== */}
+      {/* TAMPILAN DESKTOP (TABEL) */}
+      {/* ======================================================== */}
+      <div className="hidden md:block card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
-            <thead>
+            <thead className="bg-base-200">
               <tr>
                 <th>Tgl Masuk</th>
                 <th>Nama Tamu</th>
@@ -125,32 +166,30 @@ export default function LaporanPage() {
               {laporan.length === 0 && (
                 <tr>
                   <td colSpan={6} className="text-center py-8 text-gray-500">
-                    Tidak ada data pendapatan pada bulan {listBulan[bulan - 1]} {tahun}.
+                    Tidak ada data pendapatan pada periode ini.
                   </td>
                 </tr>
               )}
               {laporan.map((t) => (
-                <tr key={t.id}>
-                  <td>{t.tanggal_masuk}</td>
+                <tr key={t.id} className="hover">
+                  <td className="whitespace-nowrap">{t.tanggal_masuk}</td>
                   <td className="font-semibold">{t.nama}</td>
                   <td><div className="badge badge-outline">{t.kamar?.nomor_kamar || '-'}</div></td>
                   <td className="capitalize">{t.periode}</td>
                   <td className="font-bold text-success">Rp {t.harga?.toLocaleString('id-ID')}</td>
                   <td>
                     {t.tanggal_keluar
-                      ? <span className="badge badge-ghost">Selesai (Checkout)</span>
+                      ? <span className="badge badge-ghost">Selesai</span>
                       : <span className="badge badge-success text-white">Masih Menghuni</span>}
                   </td>
                 </tr>
               ))}
             </tbody>
-            
-            {/* Footer Total */}
             {laporan.length > 0 && (
               <tfoot>
                 <tr className="bg-base-200">
-                  <th colSpan={4} className="text-right text-lg">Total Pendapatan :</th>
-                  <th className="text-left text-lg text-success">Rp {totalPendapatan.toLocaleString('id-ID')}</th>
+                  <th colSpan={4} className="text-right text-base">Total Pendapatan :</th>
+                  <th className="text-left text-base text-success">Rp {totalPendapatan.toLocaleString('id-ID')}</th>
                   <th></th>
                 </tr>
               </tfoot>
