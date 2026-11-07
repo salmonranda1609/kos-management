@@ -19,6 +19,7 @@ export default function TamuPage() {
   });
   const [loading, setLoading] = useState(false);
 
+  // State untuk Cetak PDF
   const [printData, setPrintData] = useState(null);
   const componentRef = useRef();
   const handlePrint = useReactToPrint({ content: () => componentRef.current });
@@ -172,9 +173,6 @@ export default function TamuPage() {
       {/* ======================================================== */}
       {/* TAMPILAN MOBILE (DESAIN LIST MODERN) */}
       {/* ======================================================== */}
-      {/* ======================================================== */}
-      {/* TAMPILAN MOBILE (DESAIN LIST MODERN) */}
-      {/* ======================================================== */}
       <div className="block md:hidden bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
         {tamu.length === 0 && (
           <div className="text-center py-8 text-gray-500 text-sm">Belum ada data tamu.</div>
@@ -182,18 +180,14 @@ export default function TamuPage() {
         <div className="divide-y divide-base-200">
           {tamu.map((t) => {
             const initials = t.nama.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            
             return (
               <div key={t.id} className="p-3">
                 <div className="grid grid-cols-[auto_1fr] gap-3">
-                  {/* Avatar Inisial */}
                   <div className="avatar placeholder">
                     <div className="bg-primary text-primary-content rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm">
                       <span>{initials}</span>
                     </div>
                   </div>
-                  
-                  {/* Info Tamu */}
                   <div className="flex flex-col justify-center min-w-0">
                     <div className="flex justify-between items-start">
                       <div className="pr-2">
@@ -204,8 +198,6 @@ export default function TamuPage() {
                         Kmr {t.kamar?.nomor_kamar || '-'}
                       </div>
                     </div>
-                    
-                    {/* Detail Waktu */}
                     <div className="flex items-center flex-wrap gap-2 mt-1.5 text-[11px] text-gray-500">
                       <span className="flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clipRule="evenodd" /></svg>
@@ -220,8 +212,6 @@ export default function TamuPage() {
                     </div>
                   </div>
                 </div>
-                
-                {/* Tombol Aksi (Sejajar di bawah) */}
                 <div className="flex justify-end gap-1 mt-2 pt-2 border-t border-base-100">
                   <button onClick={() => handleEdit(t)} className="btn btn-xs btn-ghost text-gray-500 h-7 min-h-0 px-3 font-medium rounded-md">Edit</button>
                   <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-ghost text-info h-7 min-h-0 px-3 font-medium rounded-md">Cetak</button>
@@ -236,7 +226,8 @@ export default function TamuPage() {
       </div>
 
       {/* ======================================================== */}
-
+      {/* TAMPILAN DESKTOP (TABEL) */}
+      {/* ======================================================== */}
       <div className="hidden md:block card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
@@ -285,28 +276,46 @@ export default function TamuPage() {
       </div>
 
       {/* ================= TEMPLATE PRINT PDF ================= */}
+      {/* Hanya dirender jika printData tidak null, memastikan hanya 1 data yang tercetak */}
       <div className="hidden">
         <div ref={componentRef} className="p-8 text-black font-sans w-[800px]">
-          <div className="text-center border-b-2 border-black pb-4 mb-6">
-            <h1 className="text-3xl font-bold uppercase">Bukti Masuk Kos</h1>
-            <p className="text-sm">Kos App Management</p>
-          </div>
-          
           {printData && (
-            <div className="space-y-3 text-base">
-              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Nama Lengkap</span><span>:</span><span>{printData.nama}</span></div>
-              <div className="grid grid-cols-3 gap-2"><span className="font-bold">No. HP</span><span>:</span><span>{printData.no_hp}</span></div>
-              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Kamar</span><span>:</span><span>{printData.kamar?.nomor_kamar || '-'}</span></div>
-              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Periode</span><span>:</span><span className="capitalize">{printData.periode}</span></div>
-              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Tanggal Masuk</span><span>:</span><span>{printData.tanggal_masuk}</span></div>
-              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Harga</span><span>:</span><span>Rp {printData.harga ? printData.harga.toLocaleString('id-ID') : '-'}</span></div>
-              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Catatan</span><span>:</span><span>{printData.catatan || '-'}</span></div>
-            </div>
+            <>
+              <div className="text-center border-b-2 border-black pb-4 mb-6">
+                <h1 className="text-3xl font-bold uppercase">Bukti Masuk Kos</h1>
+                <p className="text-sm">Kos App Management</p>
+              </div>
+              
+              <div className="space-y-3 text-base">
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="font-bold">Nama Lengkap</span><span>:</span><span>{printData.nama}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="font-bold">No. HP</span><span>:</span><span>{printData.no_hp}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="font-bold">Kamar</span><span>:</span><span>{printData.kamar?.nomor_kamar || '-'}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="font-bold">Periode</span><span>:</span><span className="capitalize">{printData.periode}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="font-bold">Tanggal Masuk</span><span>:</span><span>{printData.tanggal_masuk}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="font-bold">Harga</span><span>:</span><span>Rp {printData.harga ? printData.harga.toLocaleString('id-ID') : '-'}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="font-bold">Catatan</span><span>:</span><span>{printData.catatan || '-'}</span>
+                </div>
+              </div>
+
+              <div className="mt-16 text-right pr-12">
+                <p className="mb-20">Penjaga Kos,</p>
+                <p className="font-bold underline">_____________________</p>
+              </div>
+            </>
           )}
-          <div className="mt-16 text-right pr-12">
-            <p className="mb-20">Penjaga Kos,</p>
-            <p className="font-bold underline">_____________________</p>
-          </div>
         </div>
       </div>
     </Layout>
