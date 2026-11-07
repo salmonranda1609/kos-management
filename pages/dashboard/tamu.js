@@ -8,6 +8,7 @@ export default function TamuPage() {
   const router = useRouter();
   const [role, setRole] = useState('');
   const [tamu, setTamu] = useState([]);
+  const [kamarKosong, setKamarKosong] = useState([]);
   const [kamarSemua, setKamarSemua] = useState([]);
   
   const [showForm, setShowForm] = useState(false);
@@ -26,6 +27,7 @@ export default function TamuPage() {
   const loadData = async () => {
     const { data: kamarAll } = await supabase.from('kamar').select('*').order('nomor_kamar');
     setKamarSemua(kamarAll || []);
+    setKamarKosong(kamarAll?.filter(k => k.status === 'kosong') || []);
     
     const { data } = await supabase.from('tamu').select('*, kamar(nomor_kamar)').order('created_at', { ascending: false });
     setTamu(data || []);
@@ -170,45 +172,39 @@ export default function TamuPage() {
       )}
 
       {/* ======================================================== */}
-      {/* TAMPILAN MOBILE (CARD) - Hanya muncul di layar kecil */}
+      {/* TAMPILAN MOBILE (CARD) - LEBIH RAPAT */}
       {/* ======================================================== */}
-      <div className="block md:hidden space-y-3">
+      <div className="block md:hidden space-y-2">
         {tamu.length === 0 && (
-          <div className="text-center py-8 bg-base-100 rounded-box shadow">Belum ada data tamu.</div>
+          <div className="text-center py-6 bg-base-100 rounded-box shadow text-sm">Belum ada data tamu.</div>
         )}
         {tamu.map((t) => (
-          <div key={t.id} className="card bg-base-100 shadow-md border border-base-200">
-            <div className="card-body p-4">
-              <div className="flex justify-between items-start mb-2">
+          <div key={t.id} className="card bg-base-100 shadow-sm border border-base-200">
+            <div className="card-body p-3">
+              <div className="flex justify-between items-start mb-1">
                 <div>
-                  <h3 className="font-bold text-lg">{t.nama}</h3>
-                  <p className="text-xs text-gray-500">{t.no_hp}</p>
+                  <h3 className="font-bold text-base leading-tight">{t.nama}</h3>
+                  <p className="text-[11px] text-gray-500">{t.no_hp}</p>
                 </div>
-                <div className="badge badge-primary font-bold">Kamar {t.kamar?.nomor_kamar || '-'}</div>
+                <div className="badge badge-primary badge-sm font-bold text-xs">Kamar {t.kamar?.nomor_kamar || '-'}</div>
               </div>
               
-              <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-                <div>
-                  <span className="text-gray-500">Periode:</span>
-                  <p className="font-semibold capitalize">{t.periode}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Masuk:</span>
-                  <p className="font-semibold">{t.tanggal_masuk}</p>
-                </div>
+              <div className="text-xs text-gray-600 flex gap-2 my-1">
+                <span className="capitalize bg-base-200 px-1.5 py-0.5 rounded">{t.periode}</span>
+                <span>Masuk: {t.tanggal_masuk}</span>
               </div>
 
-              <div className="flex justify-between items-center border-t pt-3 mt-1">
+              <div className="flex justify-between items-center border-t border-base-200 pt-2 mt-1">
                 <div>
                   {t.tanggal_keluar
-                    ? <span className="badge badge-ghost badge-sm">Selesai</span>
-                    : <span className="badge badge-success text-white badge-sm">Aktif</span>}
+                    ? <span className="badge badge-ghost badge-sm py-1.5">Selesai</span>
+                    : <span className="badge badge-success text-white badge-sm py-1.5">Aktif</span>}
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => handleEdit(t)} className="btn btn-xs btn-warning text-white">Edit</button>
-                  <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-info text-white">Cetak</button>
+                  <button onClick={() => handleEdit(t)} className="btn btn-xs btn-warning text-white min-h-0 h-6 px-2">Edit</button>
+                  <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-info text-white min-h-0 h-6 px-2">Cetak</button>
                   {!t.tanggal_keluar && (
-                    <button onClick={() => checkOut(t.id)} className="btn btn-xs btn-error text-white">Out</button>
+                    <button onClick={() => checkOut(t.id)} className="btn btn-xs btn-error text-white min-h-0 h-6 px-2">Out</button>
                   )}
                 </div>
               </div>
@@ -218,7 +214,7 @@ export default function TamuPage() {
       </div>
 
       {/* ======================================================== */}
-      {/* TAMPILAN DESKTOP (TABEL) - Hanya muncul di layar lebar */}
+      {/* TAMPILAN DESKTOP (TABEL) */}
       {/* ======================================================== */}
       <div className="hidden md:block card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
         <div className="overflow-x-auto">
