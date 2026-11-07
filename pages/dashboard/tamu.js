@@ -7,6 +7,9 @@ import { useReactToPrint } from 'react-to-print';
 export default function TamuPage() {
   const router = useRouter();
   const [role, setRole] = useState('');
+  const [filter, setFilter] = useState('aktif'); // 'aktif' atau 'selesai'
+  const [filter, setFilter] = useState('aktif'); // 'aktif' atau 'selesai'
+  const [filter, setFilter] = useState('aktif'); // 'aktif' atau 'selesai'
   const [tamu, setTamu] = useState([]);
   const [kamarSemua, setKamarSemua] = useState([]);
   
@@ -131,6 +134,21 @@ export default function TamuPage() {
 
   if (!role) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
 
+  // Filter data berdasarkan tab yang dipilih
+  const tamuFiltered = tamu.filter(t => 
+    filter === 'aktif' ? !t.tanggal_keluar : t.tanggal_keluar
+  );
+
+  // Filter data berdasarkan tab yang dipilih
+  const tamuFiltered = tamu.filter(t => 
+    filter === 'aktif' ? !t.tanggal_keluar : t.tanggal_keluar
+  );
+
+  // Filter data berdasarkan tab yang dipilih
+  const tamuFiltered = tamu.filter(t => 
+    filter === 'aktif' ? !t.tanggal_keluar : t.tanggal_keluar
+  );
+
   return (
     <Layout role={role}>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -140,6 +158,54 @@ export default function TamuPage() {
         </div>
         <button onClick={() => { resetForm(); setShowForm(!showForm); }} className={`btn ${showForm ? 'btn-ghost' : 'btn-primary'} w-full sm:w-auto`}>
           {showForm ? '✖ Batal' : '+ Input Tamu Baru'}
+        </button>
+      </div>
+
+      {/* Tab Filter */}
+      <div className="tabs tabs-boxed mb-4 w-full sm:w-auto inline-flex bg-base-200 p-1">
+        <button 
+          onClick={() => setFilter('aktif')} 
+          className={`tab ${filter === 'aktif' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Tamu Aktif
+        </button>
+        <button 
+          onClick={() => setFilter('selesai')} 
+          className={`tab ${filter === 'selesai' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Riwayat (Selesai)
+        </button>
+      </div>
+
+      {/* Tab Filter */}
+      <div className="tabs tabs-boxed mb-4 w-full sm:w-auto inline-flex bg-base-200 p-1">
+        <button 
+          onClick={() => setFilter('aktif')} 
+          className={`tab ${filter === 'aktif' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Tamu Aktif
+        </button>
+        <button 
+          onClick={() => setFilter('selesai')} 
+          className={`tab ${filter === 'selesai' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Riwayat (Selesai)
+        </button>
+      </div>
+
+      {/* Tab Filter */}
+      <div className="tabs tabs-boxed mb-4 w-full sm:w-auto inline-flex bg-base-200 p-1">
+        <button 
+          onClick={() => setFilter('aktif')} 
+          className={`tab ${filter === 'aktif' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Tamu Aktif
+        </button>
+        <button 
+          onClick={() => setFilter('selesai')} 
+          className={`tab ${filter === 'selesai' ? 'tab-active bg-primary text-white' : ''}`}
+        >
+          Riwayat (Selesai)
         </button>
       </div>
 
@@ -200,10 +266,10 @@ export default function TamuPage() {
       {/* TAMPILAN MOBILE */}
       <div className="block md:hidden bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
         {tamu.length === 0 && (
-          <div className="text-center py-8 text-gray-500 text-sm">Belum ada data tamu.</div>
+          <div className="text-center py-8 text-gray-500 text-sm">Tidak ada data tamu pada kategori ini.</div>
         )}
         <div className="divide-y divide-base-200">
-          {tamu.map((t) => {
+          {tamuFiltered.map((t) => {
             const initials = t.nama.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             return (
               <div key={t.id} className="p-3">
@@ -267,9 +333,9 @@ export default function TamuPage() {
             </thead>
             <tbody>
               {tamu.length === 0 && (
-                <tr><td colSpan={6} className="text-center py-8 text-gray-500">Belum ada data tamu.</td></tr>
+                <tr><td colSpan={6} className="text-center py-8 text-gray-500">Tidak ada data tamu pada kategori ini.</td></tr>
               )}
-              {tamu.map((t) => (
+              {tamuFiltered.map((t) => (
                 <tr key={t.id} className="hover">
                   <td>
                     <div className="font-bold">{t.nama}</div>
