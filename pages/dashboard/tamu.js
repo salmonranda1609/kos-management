@@ -172,56 +172,62 @@ export default function TamuPage() {
       {/* ======================================================== */}
       {/* TAMPILAN MOBILE (DESAIN LIST MODERN) */}
       {/* ======================================================== */}
+      {/* ======================================================== */}
+      {/* TAMPILAN MOBILE (DESAIN LIST MODERN) */}
+      {/* ======================================================== */}
       <div className="block md:hidden bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
         {tamu.length === 0 && (
           <div className="text-center py-8 text-gray-500 text-sm">Belum ada data tamu.</div>
         )}
         <div className="divide-y divide-base-200">
           {tamu.map((t) => {
-            // Mengambil inisial nama (max 2 huruf)
             const initials = t.nama.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             
             return (
-              <div key={t.id} className="p-4 flex gap-3">
-                {/* Avatar Inisial */}
-                <div className="avatar placeholder">
-                  <div className="bg-primary text-primary-content rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm">
-                    <span>{initials}</span>
+              <div key={t.id} className="p-3">
+                <div className="grid grid-cols-[auto_1fr] gap-3">
+                  {/* Avatar Inisial */}
+                  <div className="avatar placeholder">
+                    <div className="bg-primary text-primary-content rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm">
+                      <span>{initials}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Info Tamu */}
+                  <div className="flex flex-col justify-center min-w-0">
+                    <div className="flex justify-between items-start">
+                      <div className="pr-2">
+                        <h3 className="font-bold text-sm text-base-content truncate">{t.nama}</h3>
+                        <p className="text-[11px] text-gray-500">{t.no_hp}</p>
+                      </div>
+                      <div className="badge badge-primary badge-sm font-semibold text-[10px] whitespace-nowrap shrink-0">
+                        Kmr {t.kamar?.nomor_kamar || '-'}
+                      </div>
+                    </div>
+                    
+                    {/* Detail Waktu */}
+                    <div className="flex items-center flex-wrap gap-2 mt-1.5 text-[11px] text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clipRule="evenodd" /></svg>
+                        {t.tanggal_masuk}
+                      </span>
+                      <span className="capitalize px-1.5 py-0.5 bg-base-200 rounded text-[9px] font-medium">{t.periode}</span>
+                      {t.tanggal_keluar ? (
+                        <span className="text-gray-400">Selesai</span>
+                      ) : (
+                        <span className="text-success font-semibold">Aktif</span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 
-                {/* Info Tamu */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-sm text-base-content truncate">{t.nama}</h3>
-                      <p className="text-[11px] text-gray-500">{t.no_hp}</p>
-                    </div>
-                    <div className="badge badge-primary badge-sm font-semibold text-[10px] whitespace-nowrap">Kmr {t.kamar?.nomor_kamar || '-'}</div>
-                  </div>
-                  
-                  {/* Detail Waktu */}
-                  <div className="flex items-center gap-2 mt-1.5 text-[11px] text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clipRule="evenodd" /></svg>
-                      {t.tanggal_masuk}
-                    </span>
-                    <span className="capitalize px-1.5 py-0.5 bg-base-200 rounded text-[9px] font-medium">{t.periode}</span>
-                    {t.tanggal_keluar ? (
-                      <span className="text-gray-400">Selesai</span>
-                    ) : (
-                      <span className="text-success font-semibold">Aktif</span>
-                    )}
-                  </div>
-                  
-                  {/* Tombol Aksi (Kanan Bawah) */}
-                  <div className="flex justify-end gap-1 mt-2">
-                    <button onClick={() => handleEdit(t)} className="btn btn-xs btn-ghost text-gray-500 h-6 min-h-0 px-2 font-normal">Edit</button>
-                    <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-ghost text-info h-6 min-h-0 px-2 font-normal">Cetak</button>
-                    {!t.tanggal_keluar && (
-                      <button onClick={() => checkOut(t.id)} className="btn btn-xs btn-ghost text-error h-6 min-h-0 px-2 font-normal">Checkout</button>
-                    )}
-                  </div>
+                {/* Tombol Aksi (Sejajar di bawah) */}
+                <div className="flex justify-end gap-1 mt-2 pt-2 border-t border-base-100">
+                  <button onClick={() => handleEdit(t)} className="btn btn-xs btn-ghost text-gray-500 h-7 min-h-0 px-3 font-medium rounded-md">Edit</button>
+                  <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-ghost text-info h-7 min-h-0 px-3 font-medium rounded-md">Cetak</button>
+                  {!t.tanggal_keluar && (
+                    <button onClick={() => checkOut(t.id)} className="btn btn-xs btn-ghost text-error h-7 min-h-0 px-3 font-medium rounded-md">Checkout</button>
+                  )}
                 </div>
               </div>
             );
@@ -230,8 +236,7 @@ export default function TamuPage() {
       </div>
 
       {/* ======================================================== */}
-      {/* TAMPILAN DESKTOP (TABEL) */}
-      {/* ======================================================== */}
+
       <div className="hidden md:block card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
