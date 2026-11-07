@@ -8,7 +8,6 @@ export default function TamuPage() {
   const router = useRouter();
   const [role, setRole] = useState('');
   const [tamu, setTamu] = useState([]);
-  const [kamarKosong, setKamarKosong] = useState([]);
   const [kamarSemua, setKamarSemua] = useState([]);
   
   const [showForm, setShowForm] = useState(false);
@@ -27,7 +26,6 @@ export default function TamuPage() {
   const loadData = async () => {
     const { data: kamarAll } = await supabase.from('kamar').select('*').order('nomor_kamar');
     setKamarSemua(kamarAll || []);
-    setKamarKosong(kamarAll?.filter(k => k.status === 'kosong') || []);
     
     const { data } = await supabase.from('tamu').select('*, kamar(nomor_kamar)').order('created_at', { ascending: false });
     setTamu(data || []);
@@ -112,30 +110,27 @@ export default function TamuPage() {
           <h1 className="text-2xl font-bold">📝 Data Tamu</h1>
           <p className="text-sm text-gray-500 mt-1">Kelola data penghuni kos</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(!showForm); }} className={`btn ${showForm ? 'btn-ghost' : 'btn-primary'}`}>
+        <button onClick={() => { resetForm(); setShowForm(!showForm); }} className={`btn ${showForm ? 'btn-ghost' : 'btn-primary'} w-full sm:w-auto`}>
           {showForm ? '✖ Batal' : '+ Input Tamu Baru'}
         </button>
       </div>
 
-      {/* Form Card yang Lebih Rapi */}
+      {/* Form Card */}
       {showForm && (
         <div className="card bg-base-100 shadow-xl mb-6 border border-base-200">
-          <div className="card-body p-6 md:p-8">
+          <div className="card-body p-5 md:p-8">
             <h2 className="card-title text-lg mb-2">{editId ? 'Edit Data Tamu' : 'Form Tamu Baru'}</h2>
             <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-              
               <div className="form-control w-full">
-                <label className="label pt-0"><span className="label-text font-semibold">Nama Lengkap <span className="text-error">*</span></span></label>
-                <input required value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="input input-bordered w-full" placeholder="Masukkan nama lengkap" />
+                <label className="label pt-0"><span className="label-text font-semibold">Nama Lengkap *</span></label>
+                <input required value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="input input-bordered w-full" />
               </div>
-
               <div className="form-control w-full">
-                <label className="label pt-0"><span className="label-text font-semibold">No. HP <span className="text-error">*</span></span></label>
-                <input required value={form.no_hp} onChange={(e) => setForm({ ...form, no_hp: e.target.value })} className="input input-bordered w-full" placeholder="0812xxxx" />
+                <label className="label pt-0"><span className="label-text font-semibold">No. HP *</span></label>
+                <input required value={form.no_hp} onChange={(e) => setForm({ ...form, no_hp: e.target.value })} className="input input-bordered w-full" />
               </div>
-
               <div className="form-control w-full">
-                <label className="label pt-0"><span className="label-text font-semibold">Kamar <span className="text-error">*</span></span></label>
+                <label className="label pt-0"><span className="label-text font-semibold">Kamar *</span></label>
                 <select required value={form.kamar_id} onChange={(e) => setForm({ ...form, kamar_id: e.target.value })} className="select select-bordered w-full">
                   <option value="">-- Pilih Kamar --</option>
                   {kamarSemua.filter(k => k.status === 'kosong' || k.id === parseInt(form.kamar_id)).map((k) => (
@@ -143,31 +138,26 @@ export default function TamuPage() {
                   ))}
                 </select>
               </div>
-
               <div className="form-control w-full">
-                <label className="label pt-0"><span className="label-text font-semibold">Periode <span className="text-error">*</span></span></label>
+                <label className="label pt-0"><span className="label-text font-semibold">Periode *</span></label>
                 <select required value={form.periode} onChange={(e) => setForm({ ...form, periode: e.target.value })} className="select select-bordered w-full">
                   <option value="harian">Harian</option>
                   <option value="mingguan">Mingguan</option>
                   <option value="bulanan">Bulanan</option>
                 </select>
               </div>
-
               <div className="form-control w-full">
-                <label className="label pt-0"><span className="label-text font-semibold">Tanggal Masuk <span className="text-error">*</span></span></label>
+                <label className="label pt-0"><span className="label-text font-semibold">Tanggal Masuk *</span></label>
                 <input type="date" required value={form.tanggal_masuk} onChange={(e) => setForm({ ...form, tanggal_masuk: e.target.value })} className="input input-bordered w-full" />
               </div>
-
               <div className="form-control w-full">
                 <label className="label pt-0"><span className="label-text font-semibold">Harga (Rp)</span></label>
-                <input type="number" value={form.harga} onChange={(e) => setForm({ ...form, harga: e.target.value })} className="input input-bordered w-full" placeholder="Contoh: 1500000" />
+                <input type="number" value={form.harga} onChange={(e) => setForm({ ...form, harga: e.target.value })} className="input input-bordered w-full" />
               </div>
-
               <div className="form-control w-full md:col-span-2">
-                <label className="label pt-0"><span className="label-text font-semibold">Catatan Tambahan</span></label>
-                <textarea value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} className="textarea textarea-bordered w-full" rows={2} placeholder="Opsional..." />
+                <label className="label pt-0"><span className="label-text font-semibold">Catatan</span></label>
+                <textarea value={form.catatan} onChange={(e) => setForm({ ...form, catatan: e.target.value })} className="textarea textarea-bordered w-full" rows={2} />
               </div>
-
               <div className="md:col-span-2 mt-4 flex justify-end gap-2">
                 <button type="button" onClick={resetForm} className="btn btn-ghost">Batal</button>
                 <button disabled={loading} className="btn btn-success text-white">
@@ -179,8 +169,58 @@ export default function TamuPage() {
         </div>
       )}
 
-      {/* Tabel Data Tamu */}
-      <div className="card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
+      {/* ======================================================== */}
+      {/* TAMPILAN MOBILE (CARD) - Hanya muncul di layar kecil */}
+      {/* ======================================================== */}
+      <div className="block md:hidden space-y-3">
+        {tamu.length === 0 && (
+          <div className="text-center py-8 bg-base-100 rounded-box shadow">Belum ada data tamu.</div>
+        )}
+        {tamu.map((t) => (
+          <div key={t.id} className="card bg-base-100 shadow-md border border-base-200">
+            <div className="card-body p-4">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h3 className="font-bold text-lg">{t.nama}</h3>
+                  <p className="text-xs text-gray-500">{t.no_hp}</p>
+                </div>
+                <div className="badge badge-primary font-bold">Kamar {t.kamar?.nomor_kamar || '-'}</div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                <div>
+                  <span className="text-gray-500">Periode:</span>
+                  <p className="font-semibold capitalize">{t.periode}</p>
+                </div>
+                <div>
+                  <span className="text-gray-500">Masuk:</span>
+                  <p className="font-semibold">{t.tanggal_masuk}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center border-t pt-3 mt-1">
+                <div>
+                  {t.tanggal_keluar
+                    ? <span className="badge badge-ghost badge-sm">Selesai</span>
+                    : <span className="badge badge-success text-white badge-sm">Aktif</span>}
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => handleEdit(t)} className="btn btn-xs btn-warning text-white">Edit</button>
+                  <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-info text-white">Cetak</button>
+                  {!t.tanggal_keluar && (
+                    <button onClick={() => checkOut(t.id)} className="btn btn-xs btn-error text-white">Out</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ======================================================== */}
+      {/* TAMPILAN DESKTOP (TABEL) - Hanya muncul di layar lebar */}
+      {/* ======================================================== */}
+      <div className="hidden md:block card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full">
             <thead className="bg-base-200">
@@ -205,14 +245,14 @@ export default function TamuPage() {
                   </td>
                   <td><div className="badge badge-outline font-semibold">Kamar {t.kamar?.nomor_kamar || '-'}</div></td>
                   <td className="capitalize text-sm">{t.periode}</td>
-                  <td className="text-sm">{t.tanggal_masuk}</td>
+                  <td className="text-sm whitespace-nowrap">{t.tanggal_masuk}</td>
                   <td>
                     {t.tanggal_keluar
                       ? <span className="badge badge-ghost badge-sm">Selesai</span>
                       : <span className="badge badge-success text-white badge-sm">Aktif</span>}
                   </td>
                   <td className="text-center">
-                    <div className="flex flex-wrap justify-center gap-1">
+                    <div className="flex flex-nowrap justify-center gap-1">
                       <button onClick={() => handleEdit(t)} className="btn btn-xs btn-warning btn-outline">Edit</button>
                       <button onClick={() => triggerPrint(t)} className="btn btn-xs btn-info btn-outline">Cetak</button>
                       {!t.tanggal_keluar && (
@@ -237,30 +277,15 @@ export default function TamuPage() {
           
           {printData && (
             <div className="space-y-3 text-base">
-              <div className="grid grid-cols-3 gap-2">
-                <span className="font-bold">Nama Lengkap</span><span>:</span><span>{printData.nama}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <span className="font-bold">No. HP</span><span>:</span><span>{printData.no_hp}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <span className="font-bold">Kamar</span><span>:</span><span>{printData.kamar?.nomor_kamar || '-'}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <span className="font-bold">Periode</span><span>:</span><span className="capitalize">{printData.periode}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <span className="font-bold">Tanggal Masuk</span><span>:</span><span>{printData.tanggal_masuk}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <span className="font-bold">Harga</span><span>:</span><span>Rp {printData.harga ? printData.harga.toLocaleString('id-ID') : '-'}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <span className="font-bold">Catatan</span><span>:</span><span>{printData.catatan || '-'}</span>
-              </div>
+              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Nama Lengkap</span><span>:</span><span>{printData.nama}</span></div>
+              <div className="grid grid-cols-3 gap-2"><span className="font-bold">No. HP</span><span>:</span><span>{printData.no_hp}</span></div>
+              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Kamar</span><span>:</span><span>{printData.kamar?.nomor_kamar || '-'}</span></div>
+              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Periode</span><span>:</span><span className="capitalize">{printData.periode}</span></div>
+              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Tanggal Masuk</span><span>:</span><span>{printData.tanggal_masuk}</span></div>
+              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Harga</span><span>:</span><span>Rp {printData.harga ? printData.harga.toLocaleString('id-ID') : '-'}</span></div>
+              <div className="grid grid-cols-3 gap-2"><span className="font-bold">Catatan</span><span>:</span><span>{printData.catatan || '-'}</span></div>
             </div>
           )}
-
           <div className="mt-16 text-right pr-12">
             <p className="mb-20">Penjaga Kos,</p>
             <p className="font-bold underline">_____________________</p>
