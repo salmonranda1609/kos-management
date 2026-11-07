@@ -76,18 +76,18 @@ export default function LaporanPage() {
         </div>
       </div>
 
-      {/* STATS RINGKASAN */}
-      <div className="stats stats-vertical md:stats-horizontal shadow w-full bg-white border border-gray-200 mb-6">
-        <div className="stat">
-          <div className="stat-title text-gray-500">Total Transaksi</div>
-          <div className="stat-value text-xl text-pink-500">
-            {laporan.length} <span className="text-sm font-normal text-gray-500">Tamu</span>
+            {/* STATS RINGKASAN (Bersebelahan dalam 1 Card) */}
+      <div className="stats stats-horizontal shadow w-full bg-white border border-gray-200 mb-6 overflow-x-auto">
+        <div className="stat px-4 py-3">
+          <div className="stat-title text-xs text-gray-500">Total Transaksi</div>
+          <div className="stat-value text-base md:text-xl text-pink-500">
+            {laporan.length} <span className="text-xs font-normal text-gray-500">Tamu</span>
           </div>
         </div>
         
-        <div className="stat">
-          <div className="stat-title text-gray-500">Total Pendapatan</div>
-          <div className="stat-value text-xl text-green-600 break-words">
+        <div className="stat px-4 py-3">
+          <div className="stat-title text-xs text-gray-500">Total Pendapatan</div>
+          <div className="stat-value text-base md:text-xl text-green-600 truncate" title={`Rp ${totalPendapatan.toLocaleString('id-ID')}`}>
             Rp {totalPendapatan.toLocaleString('id-ID')}
           </div>
         </div>
